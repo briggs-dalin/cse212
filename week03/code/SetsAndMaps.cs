@@ -22,8 +22,28 @@ public static class SetsAndMaps
     public static string[] FindPairs(string[] words)
     {
         // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+
+        var set = new HashSet<string>(words);       // Allows quick lookup
+        var result = new List<string>();
+        var seen = new HashSet<string>();           // Tracks already added words
+
+        foreach (var word in words)
+        {
+            if (word[0] == word[1]) continue;       // Skip words like "aa"
+
+            var reverse = $"{word[1]}{word[0]}";    // Reverse the word
+
+            if (set.Contains(reverse) && !seen.Contains(reverse) && !seen.Contains(word))
+            {
+                result.Add($"{word} & {reverse}");
+                seen.Add(word);
+                seen.Add(reverse);
+            }
     }
+
+    return result.ToArray();
+}
+    
 
     /// <summary>
     /// Read a census file and summarize the degrees (education)
@@ -43,6 +63,14 @@ public static class SetsAndMaps
         {
             var fields = line.Split(",");
             // TODO Problem 2 - ADD YOUR CODE HERE
+             if (fields.Length < 4) continue;       // Skip incomplete lines
+
+        var degree = fields[3].Trim();              // Extract degree name
+
+        if (degrees.ContainsKey(degree))
+            degrees[degree]++;
+        else
+            degrees[degree] = 1;
         }
 
         return degrees;
@@ -67,7 +95,30 @@ public static class SetsAndMaps
     public static bool IsAnagram(string word1, string word2)
     {
         // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        var dict = new Dictionary<char, int>();
+
+    string cleaned1 = word1.Replace(" ", "").ToLower();
+    string cleaned2 = word2.Replace(" ", "").ToLower();
+
+    if (cleaned1.Length != cleaned2.Length) return false;
+
+    // Count characters in the first word
+    foreach (var c in cleaned1)
+    {
+        if (!dict.ContainsKey(c)) dict[c] = 0;
+        dict[c]++;
+    }
+
+    // Subtract character counts using the second word
+    foreach (var c in cleaned2)
+    {
+        if (!dict.ContainsKey(c)) return false;
+        dict[c]--;
+        if (dict[c] < 0) return false;
+    }
+
+    // Make sure all counts are zero
+    return dict.Values.All(v => v == 0);
     }
 
     /// <summary>
